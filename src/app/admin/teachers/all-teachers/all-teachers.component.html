@@ -45,14 +45,14 @@
                                 <input placeholder="Search" type="text" #filter class="browser-default search-field"
                                   aria-label="Search box">
                               </li>
-                              <li>
+                              <!--<li>
                                 <div class="icon-button-demo m-l-10" [hidden]=!selection.hasValue()>
                                   <button mat-mini-fab color="warn" (click)="removeSelectedRows()">
                                     <mat-icon class="col-white">delete
                                     </mat-icon>
                                   </button>
                                 </div>
-                              </li>
+                              </li>-->
                             </ul>
                           </div>
                           <div class="col-4">
@@ -66,10 +66,10 @@
                               </li>
                               <li>
                                 <div class="icon-button-demo">
-                                  <button mat-mini-fab color="primary" (click)="refresh()">
+                                  <!--<button mat-mini-fab color="primary" (click)="refresh()">
                                     <mat-icon class="col-white">refresh
                                     </mat-icon>
-                                  </button>
+                                  </button>-->
                                 </div>
                               </li>
                             </ul>
@@ -172,7 +172,7 @@
                         </mat-row>
                       </mat-table>
                       <!-- Loading spinner -->
-                      <div *ngIf="exampleDatabase.isTblLoading" class="tbl-spinner">
+                      <div *ngIf="teachersService.isTblLoading" class="tbl-spinner">
                         <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                         </mat-progress-spinner>
                       </div>
@@ -194,10 +194,10 @@
                             <mat-icon>delete</mat-icon>
                             <span>Delete Record</span>
                           </button>
-                          <button mat-menu-item (click)="refresh()">
+                          <!--<button mat-menu-item (click)="refresh()">
                             <mat-icon>refresh</mat-icon>
                             <span>Refresh Record</span>
-                          </button>
+                          </button>-->
                           <button mat-menu-item disabled>
                             <mat-icon>no_encryption</mat-icon>
                             <span>Disable</span>
@@ -223,7 +223,7 @@
                         </button>
                       </mat-menu>
                       <!-- context menu end -->
-                      <div *ngIf="!exampleDatabase.isTblLoading" class="no-results"
+                      <div *ngIf="!teachersService.isTblLoading" class="no-results"
                         [style.display]="dataSource.renderedData.length == 0 ? '' : 'none'">
                         No results
                       </div>

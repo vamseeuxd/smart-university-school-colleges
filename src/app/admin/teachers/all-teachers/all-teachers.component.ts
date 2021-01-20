@@ -33,7 +33,6 @@ export class AllTeachersComponent implements OnInit {
     'date',
     'actions',
   ];
-  exampleDatabase: TeachersService | null;
   dataSource: ExampleDataSource | null;
   selection = new SelectionModel<Teachers>(true, []);
   id: string;
@@ -41,7 +40,6 @@ export class AllTeachersComponent implements OnInit {
 
   constructor(
     public httpClient: HttpClient,
-    public teachersFirestoreService: TeachersFirestoreService,
     public dialog: MatDialog,
     public teachersService: TeachersService,
     private snackBar: MatSnackBar
@@ -59,9 +57,9 @@ export class AllTeachersComponent implements OnInit {
     this.loadData();
   }
 
-  refresh() {
+  /*refresh() {
     this.loadData();
-  }
+  }*/
 
   addNew() {
     const dialogRef = this.dialog.open(FormDialogComponent, {
@@ -72,12 +70,6 @@ export class AllTeachersComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 1) {
-        // After dialog is closed we're doing frontend updates
-        // For add we're just pushing a new row inside DataServicex
-        this.exampleDatabase.dataChange.value.unshift(
-          this.teachersService.getDialogData()
-        );
-        this.refreshTable();
         this.showNotification(
           'snackbar-success',
           'Add Record Successfully...!!!',
@@ -98,16 +90,6 @@ export class AllTeachersComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 1) {
-        // When using an edit things are little different, firstly we find record inside DataService by id
-        const foundIndex = this.exampleDatabase.dataChange.value.findIndex(
-          (x) => x.id === this.id
-        );
-        // Then you update that record using data from dialogData (values you enetered)
-        this.exampleDatabase.dataChange.value[
-          foundIndex
-          ] = this.teachersService.getDialogData();
-        // And lastly refresh table
-        this.refreshTable();
         this.showNotification(
           'black',
           'Edit Record Successfully...!!!',
@@ -125,12 +107,6 @@ export class AllTeachersComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 1) {
-        const foundIndex = this.exampleDatabase.dataChange.value.findIndex(
-          (x) => x.id === this.id
-        );
-        // for delete we use splice in order to remove single object from DataService
-        this.exampleDatabase.dataChange.value.splice(foundIndex, 1);
-        this.refreshTable();
         this.showNotification(
           'snackbar-danger',
           'Delete Record Successfully...!!!',
@@ -188,9 +164,8 @@ export class AllTeachersComponent implements OnInit {
   }
 
   public loadData() {
-    this.exampleDatabase = new TeachersService(this.httpClient, this.teachersFirestoreService);
     this.dataSource = new ExampleDataSource(
-      this.exampleDatabase,
+      this.teachersService,
       this.paginator,
       this.sort
     );
