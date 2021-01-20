@@ -1,18 +1,19 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { DepartmentService } from './department.service';
-import { HttpClient } from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { Department } from './department.model';
-import { DataSource } from '@angular/cdk/collections';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, fromEvent, merge, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { DeleteDialogComponent } from './dialogs/delete/delete.component';
-import { MatMenuTrigger } from '@angular/material/menu';
-import { SelectionModel } from '@angular/cdk/collections';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {DepartmentService} from './department.service';
+import {HttpClient} from '@angular/common/http';
+import {MatDialog} from '@angular/material/dialog';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
+import {Department} from './department.model';
+import {DataSource} from '@angular/cdk/collections';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {BehaviorSubject, fromEvent, merge, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {FormDialogComponent} from './dialogs/form-dialog/form-dialog.component';
+import {DeleteDialogComponent} from './dialogs/delete/delete.component';
+import {MatMenuTrigger} from '@angular/material/menu';
+import {SelectionModel} from '@angular/cdk/collections';
+import {DepartmentsFirestoreService} from '../departments-firestore.service';
 
 @Component({
   selector: 'app-all-departments',
@@ -33,27 +34,33 @@ export class AllDepartmentsComponent implements OnInit {
   exampleDatabase: DepartmentService | null;
   dataSource: ExampleDataSource | null;
   selection = new SelectionModel<Department>(true, []);
-  id: number;
+  id: string;
   department: Department | null;
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
     public departmentService: DepartmentService,
+    private departmentsFirestoreService: DepartmentsFirestoreService,
     private snackBar: MatSnackBar
-  ) {}
-  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild('filter', { static: true }) filter: ElementRef;
+  ) {
+  }
+
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  @ViewChild('filter', {static: true}) filter: ElementRef;
   @ViewChild(MatMenuTrigger)
   contextMenu: MatMenuTrigger;
-  contextMenuPosition = { x: '0px', y: '0px' };
+  contextMenuPosition = {x: '0px', y: '0px'};
 
   ngOnInit() {
     this.loadData();
   }
+
   refresh() {
     this.loadData();
   }
+
   addNew() {
     const dialogRef = this.dialog.open(FormDialogComponent, {
       data: {
@@ -78,6 +85,7 @@ export class AllDepartmentsComponent implements OnInit {
       }
     });
   }
+
   editCall(row) {
     this.id = row.id;
     const dialogRef = this.dialog.open(FormDialogComponent, {
@@ -95,7 +103,7 @@ export class AllDepartmentsComponent implements OnInit {
         // Then you update that record using data from dialogData (values you enetered)
         this.exampleDatabase.dataChange.value[
           foundIndex
-        ] = this.departmentService.getDialogData();
+          ] = this.departmentService.getDialogData();
         // And lastly refresh table
         this.refreshTable();
         this.showNotification(
@@ -107,6 +115,7 @@ export class AllDepartmentsComponent implements OnInit {
       }
     });
   }
+
   deleteItem(row) {
     this.id = row.id;
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
@@ -129,9 +138,11 @@ export class AllDepartmentsComponent implements OnInit {
       }
     });
   }
+
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
   }
+
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -144,11 +155,19 @@ export class AllDepartmentsComponent implements OnInit {
     this.isAllSelected()
       ? this.selection.clear()
       : this.dataSource.renderedData.forEach((row) =>
-          this.selection.select(row)
-        );
+        this.selection.select(row)
+      );
   }
+
   removeSelectedRows() {
-    const totalSelect = this.selection.selected.length;
+    //todo : Delete Selected Departments
+    this.showNotification(
+      'snackbar-danger',
+      ' todo : Delete Selected Departments...!!!',
+      'bottom',
+      'center'
+    );
+    /*const totalSelect = this.selection.selected.length;
     this.selection.selected.forEach((item) => {
       const index: number = this.dataSource.renderedData.findIndex(
         (d) => d === item
@@ -163,10 +182,11 @@ export class AllDepartmentsComponent implements OnInit {
       totalSelect + ' Record Delete Successfully...!!!',
       'bottom',
       'center'
-    );
+    );*/
   }
+
   public loadData() {
-    this.exampleDatabase = new DepartmentService(this.httpClient);
+    this.exampleDatabase = new DepartmentService(this.httpClient, this.departmentsFirestoreService);
     this.dataSource = new ExampleDataSource(
       this.exampleDatabase,
       this.paginator,
@@ -179,6 +199,7 @@ export class AllDepartmentsComponent implements OnInit {
       this.dataSource.filter = this.filter.nativeElement.value;
     });
   }
+
   showNotification(colorName, text, placementFrom, placementAlign) {
     this.snackBar.open(text, '', {
       duration: 2000,
@@ -187,26 +208,32 @@ export class AllDepartmentsComponent implements OnInit {
       panelClass: colorName,
     });
   }
+
   // context menu
   onContextMenu(event: MouseEvent, item: Department) {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenu.menuData = { item: item };
+    this.contextMenu.menuData = {item: item};
     this.contextMenu.menu.focusFirstItem('mouse');
     this.contextMenu.openMenu();
   }
 }
+
 export class ExampleDataSource extends DataSource<Department> {
   filterChange = new BehaviorSubject('');
+
   get filter(): string {
     return this.filterChange.value;
   }
+
   set filter(filter: string) {
     this.filterChange.next(filter);
   }
+
   filteredData: Department[] = [];
   renderedData: Department[] = [];
+
   constructor(
     public exampleDatabase: DepartmentService,
     public paginator: MatPaginator,
@@ -216,6 +243,7 @@ export class ExampleDataSource extends DataSource<Department> {
     // Reset to the first page when the user changes the filter.
     this.filterChange.subscribe(() => (this.paginator.pageIndex = 0));
   }
+
   /** Connect function called by the table to retrieve one stream containing the data to render. */
   connect(): Observable<Department[]> {
     // Listen for any changes in the base data, sorting, filtering, or pagination
@@ -252,7 +280,10 @@ export class ExampleDataSource extends DataSource<Department> {
       })
     );
   }
-  disconnect() {}
+
+  disconnect() {
+  }
+
   /** Returns a sorted copy of the database data. */
   sortData(data: Department[]): Department[] {
     if (!this._sort.active || this._sort.direction === '') {

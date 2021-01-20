@@ -1,28 +1,32 @@
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Component, Inject } from '@angular/core';
-import { DepartmentService } from '../../department.service';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component, Inject} from '@angular/core';
+import {DepartmentService} from '../../department.service';
 import {
   FormControl,
   Validators,
   FormGroup,
   FormBuilder
 } from '@angular/forms';
-import { Department } from '../../department.model';
-import { MAT_DATE_LOCALE } from '@angular/material/core';
+import {Department} from '../../department.model';
+import {MAT_DATE_LOCALE} from '@angular/material/core';
+import {NgxSpinnerService} from 'ngx-spinner';
+
 @Component({
   selector: 'app-form-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.sass'],
-  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-GB' }]
+  providers: [{provide: MAT_DATE_LOCALE, useValue: 'en-GB'}]
 })
 export class FormDialogComponent {
   action: string;
   dialogTitle: string;
   departmentForm: FormGroup;
   department: Department;
+
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
+    private spinner: NgxSpinnerService,
     public departmentService: DepartmentService,
     private fb: FormBuilder
   ) {
@@ -37,10 +41,12 @@ export class FormDialogComponent {
     }
     this.departmentForm = this.createContactForm();
   }
+
   formControl = new FormControl('', [
     Validators.required
     // Validators.email,
   ]);
+
   getErrorMessage() {
     return this.formControl.hasError('required')
       ? 'Required field'
@@ -48,6 +54,7 @@ export class FormDialogComponent {
         ? 'Not a valid email'
         : '';
   }
+
   createContactForm(): FormGroup {
     return this.fb.group({
       id: [this.department.id],
@@ -62,13 +69,35 @@ export class FormDialogComponent {
       sCapacity: [this.department.sCapacity, [Validators.required]]
     });
   }
+
   submit() {
     // emppty stuff
   }
+
   onNoClick(): void {
     this.dialogRef.close();
   }
-  public confirmAdd(): void {
-    this.departmentService.addDepartment(this.departmentForm.getRawValue());
+
+  public async confirmAdd() {
+    this.spinner.show();
+    if (this.action === 'edit') {
+      try {
+        await this.departmentService.updateDepartment(new Department(this.departmentForm.getRawValue()));
+        this.dialogRef.close(1);
+        this.spinner.hide();
+      } catch (e) {
+        this.spinner.hide();
+        debugger;
+      }
+    } else {
+      try {
+        await this.departmentService.addDepartment(new Department(this.departmentForm.getRawValue()));
+        this.dialogRef.close(1);
+        this.spinner.hide();
+      } catch (e) {
+        this.spinner.hide();
+        debugger;
+      }
+    }
   }
 }

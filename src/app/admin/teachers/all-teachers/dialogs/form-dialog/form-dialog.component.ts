@@ -10,7 +10,6 @@ import {
 import {Teachers} from '../../teachers.model';
 import {formatDate} from '@angular/common';
 import {NgxSpinnerService} from 'ngx-spinner';
-import {TeachersFirestoreService} from '../../../teachers-firestore.service';
 
 @Component({
   selector: 'app-form-dialog',
@@ -28,7 +27,6 @@ export class FormDialogComponent {
     private spinner: NgxSpinnerService,
     @Inject(MAT_DIALOG_DATA) public data: any,
     public teachersService: TeachersService,
-    public teachersFirestoreService: TeachersFirestoreService,
     private fb: FormBuilder
   ) {
     // Set the defaults
