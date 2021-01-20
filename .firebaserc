@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "arrow-erp": {
+      "hosting": {
+        "smart": [
+          "arrow-erp"
+        ]
+      }
+    }
+  }
+}
