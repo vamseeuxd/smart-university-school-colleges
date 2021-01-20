@@ -13,7 +13,6 @@ import {FormDialogComponent} from './dialogs/form-dialog/form-dialog.component';
 import {DeleteDialogComponent} from './dialogs/delete/delete.component';
 import {MatMenuTrigger} from '@angular/material/menu';
 import {SelectionModel} from '@angular/cdk/collections';
-import {DepartmentsFirestoreService} from '../departments-firestore.service';
 
 @Component({
   selector: 'app-all-departments',
@@ -31,7 +30,6 @@ export class AllDepartmentsComponent implements OnInit {
     'sCapacity',
     'actions',
   ];
-  exampleDatabase: DepartmentService | null;
   dataSource: ExampleDataSource | null;
   selection = new SelectionModel<Department>(true, []);
   id: string;
@@ -41,7 +39,6 @@ export class AllDepartmentsComponent implements OnInit {
     public httpClient: HttpClient,
     public dialog: MatDialog,
     public departmentService: DepartmentService,
-    private departmentsFirestoreService: DepartmentsFirestoreService,
     private snackBar: MatSnackBar
   ) {
   }
@@ -57,9 +54,9 @@ export class AllDepartmentsComponent implements OnInit {
     this.loadData();
   }
 
-  refresh() {
+  /*refresh() {
     this.loadData();
-  }
+  }*/
 
   addNew() {
     const dialogRef = this.dialog.open(FormDialogComponent, {
@@ -70,12 +67,6 @@ export class AllDepartmentsComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 1) {
-        // After dialog is closed we're doing frontend updates
-        // For add we're just pushing a new row inside DataService
-        this.exampleDatabase.dataChange.value.unshift(
-          this.departmentService.getDialogData()
-        );
-        this.refreshTable();
         this.showNotification(
           'snackbar-success',
           'Add Record Successfully...!!!',
@@ -96,16 +87,6 @@ export class AllDepartmentsComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 1) {
-        // When using an edit things are little different, firstly we find record inside DataService by id
-        const foundIndex = this.exampleDatabase.dataChange.value.findIndex(
-          (x) => x.id === this.id
-        );
-        // Then you update that record using data from dialogData (values you enetered)
-        this.exampleDatabase.dataChange.value[
-          foundIndex
-          ] = this.departmentService.getDialogData();
-        // And lastly refresh table
-        this.refreshTable();
         this.showNotification(
           'black',
           'Edit Record Successfully...!!!',
@@ -123,12 +104,6 @@ export class AllDepartmentsComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 1) {
-        const foundIndex = this.exampleDatabase.dataChange.value.findIndex(
-          (x) => x.id === this.id
-        );
-        // for delete we use splice in order to remove single object from DataService
-        this.exampleDatabase.dataChange.value.splice(foundIndex, 1);
-        this.refreshTable();
         this.showNotification(
           'snackbar-danger',
           'Delete Record Successfully...!!!',
@@ -159,7 +134,7 @@ export class AllDepartmentsComponent implements OnInit {
       );
   }
 
-  removeSelectedRows() {
+  /*removeSelectedRows() {
     //todo : Delete Selected Departments
     this.showNotification(
       'snackbar-danger',
@@ -167,28 +142,11 @@ export class AllDepartmentsComponent implements OnInit {
       'bottom',
       'center'
     );
-    /*const totalSelect = this.selection.selected.length;
-    this.selection.selected.forEach((item) => {
-      const index: number = this.dataSource.renderedData.findIndex(
-        (d) => d === item
-      );
-      // console.log(this.dataSource.renderedData.findIndex((d) => d === item));
-      this.exampleDatabase.dataChange.value.splice(index, 1);
-      this.refreshTable();
-      this.selection = new SelectionModel<Department>(true, []);
-    });
-    this.showNotification(
-      'snackbar-danger',
-      totalSelect + ' Record Delete Successfully...!!!',
-      'bottom',
-      'center'
-    );*/
-  }
+  }*/
 
   public loadData() {
-    this.exampleDatabase = new DepartmentService(this.httpClient, this.departmentsFirestoreService);
     this.dataSource = new ExampleDataSource(
-      this.exampleDatabase,
+      this.departmentService,
       this.paginator,
       this.sort
     );
