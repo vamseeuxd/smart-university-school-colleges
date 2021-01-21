@@ -42,11 +42,12 @@ export class DepartmentService {
       }
     );*/
 
-    this.departmentsFirestoreService.getData().pipe(map(value => value.map(value1 => new Department(value1)))).subscribe(value => {
-      debugger;
-      this.isTblLoading = false;
-      this.dataChange.next(value);
-    })
+    this.departmentsFirestoreService.getData().pipe(
+      map(value => value.map(value1 => new Department(value1))))
+      .subscribe(value => {
+        this.isTblLoading = false;
+        this.dataChange.next(value);
+      })
   }
 
   addDepartment(department: Department): Promise<any> {

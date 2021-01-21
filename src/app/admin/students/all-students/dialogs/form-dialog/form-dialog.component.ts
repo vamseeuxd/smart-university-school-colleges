@@ -9,6 +9,8 @@ import {
 } from '@angular/forms';
 import { Students } from '../../students.model';
 import { formatDate } from '@angular/common';
+import {NgxSpinnerService} from 'ngx-spinner';
+import {Department} from '../../../../departments/all-departments/department.model';
 @Component({
   selector: 'app-form-dialog',
   templateUrl: './form-dialog.component.html',
@@ -23,6 +25,7 @@ export class FormDialogComponent {
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     public studentsService: StudentsService,
+    private spinner: NgxSpinnerService,
     private fb: FormBuilder
   ) {
     // Set the defaults
@@ -72,7 +75,25 @@ export class FormDialogComponent {
   onNoClick(): void {
     this.dialogRef.close();
   }
-  public confirmAdd(): void {
-    this.studentsService.addStudents(this.stdForm.getRawValue());
+  public async confirmAdd(): void {
+    // this.studentsService.addStudents(this.stdForm.getRawValue());
+    this.spinner.show();
+    if (this.action === 'edit') {
+      try {
+        await this.studentsService.updateStudents(new Students(this.stdForm.getRawValue()));
+        this.dialogRef.close(1);
+        this.spinner.hide();
+      } catch (e) {
+        this.spinner.hide();
+      }
+    } else {
+      try {
+        await this.studentsService.addStudents(new Students(this.stdForm.getRawValue()));
+        this.dialogRef.close(1);
+        this.spinner.hide();
+      } catch (e) {
+        this.spinner.hide();
+      }
+    }
   }
 }

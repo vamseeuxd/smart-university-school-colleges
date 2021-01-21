@@ -2,27 +2,27 @@ import {Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
 import {Observable} from 'rxjs';
 import firebase from 'firebase';
-import {Department, IDepartment} from './all-departments/department.model';
+import {Students, IStudents} from './all-students/students.model';
 
 @Injectable({
   providedIn: 'root',
 })
-export class DepartmentsFirestoreService {
-  private action: AngularFirestoreCollection<IDepartment>
-  readonly data$: Observable<IDepartment[]>
+export class StudentsFirestoreService {
+  private action: AngularFirestoreCollection<IStudents>
+  readonly data$: Observable<IStudents[]>
 
   constructor(
     firestore: AngularFirestore
   ) {
-    this.action = firestore.collection<IDepartment>('departments')
+    this.action = firestore.collection<IStudents>('students')
     this.data$ = firestore
-      .collection<IDepartment>('departments', (ref) => {
+      .collection<IStudents>('students', (ref) => {
         return ref.where('deleted', '==', false).orderBy('createdOn')
       })
       .valueChanges()
   }
 
-  addData(data: Department): Promise<any> {
+  addData(data: Students): Promise<any> {
     return new Promise(async (resolve, reject) => {
       const docRef = this.action.ref.doc();
       const id = docRef.id;
@@ -37,7 +37,7 @@ export class DepartmentsFirestoreService {
     })
   }
 
-  updateData(data: Department): Promise<any> {
+  updateData(data: Students): Promise<any> {
     return new Promise(async (resolve, reject) => {
       const docRef = this.action.doc(data.id).ref
       try {
@@ -49,7 +49,7 @@ export class DepartmentsFirestoreService {
     })
   }
 
-  deleteData(data: Department): Promise<any> {
+  deleteData(data: Students): Promise<any> {
     return new Promise(async (resolve, reject) => {
       try {
         const docRef = await this.action.doc(data.id)
@@ -65,7 +65,7 @@ export class DepartmentsFirestoreService {
     })
   }
 
-  getData(): Observable<IDepartment[]> {
+  getData(): Observable<IStudents[]> {
     return this.data$
   }
 
