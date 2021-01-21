@@ -20,10 +20,6 @@ export class TeachersFirestoreService {
         return ref.where('deleted', '==', false).orderBy('createdOn')
       })
       .valueChanges()
-    /*debugger;
-    this.data$.subscribe(value => {
-      debugger;
-    })*/
   }
 
   addData(data: Teachers): Promise<any> {

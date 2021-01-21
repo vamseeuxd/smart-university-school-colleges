@@ -1,7 +1,8 @@
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Component, Inject } from '@angular/core';
-import { DepartmentService } from '../../department.service';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component, Inject} from '@angular/core';
+import {DepartmentService} from '../../department.service';
 import {NgxSpinnerService} from 'ngx-spinner';
+
 @Component({
   selector: 'app-delete',
   templateUrl: './delete.component.html',
@@ -13,14 +14,16 @@ export class DeleteDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private spinner: NgxSpinnerService,
     public departmentService: DepartmentService
-  ) {}
+  ) {
+  }
+
   onNoClick(): void {
     this.dialogRef.close();
   }
 
   async confirmDelete() {
+    this.spinner.show();
     try {
-      debugger
       await this.departmentService.deleteDepartment(this.data);
       this.spinner.hide();
     } catch (e) {

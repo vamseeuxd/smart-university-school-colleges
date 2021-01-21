@@ -91,7 +91,6 @@ export class FormDialogComponent {
         this.spinner.hide();
       } catch (e) {
         this.spinner.hide();
-        debugger;
       }
     } else {
       try {
@@ -100,7 +99,6 @@ export class FormDialogComponent {
         this.spinner.hide();
       } catch (e) {
         this.spinner.hide();
-        debugger;
       }
     }
   }

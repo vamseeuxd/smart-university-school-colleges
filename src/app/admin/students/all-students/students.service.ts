@@ -1,7 +1,10 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { Students } from './students.model';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {BehaviorSubject} from 'rxjs';
+import {Students} from './students.model';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {StudentsFirestoreService} from '../students-firestore.service';
+import {map} from 'rxjs/operators';
+
 @Injectable()
 export class StudentsService {
   private readonly API_URL = 'assets/data/students.json';
@@ -9,16 +12,24 @@ export class StudentsService {
   dataChange: BehaviorSubject<Students[]> = new BehaviorSubject<Students[]>([]);
   // Temporarily stores data from dialogs
   dialogData: any;
-  constructor(private httpClient: HttpClient) {}
+
+  constructor(
+    private httpClient: HttpClient,
+    private studentsFirestoreService: StudentsFirestoreService,
+  ) {
+  }
+
   get data(): Students[] {
     return this.dataChange.value;
   }
+
   getDialogData() {
     return this.dialogData;
   }
+
   /** CRUD METHODS */
   getAllStudentss(): void {
-    this.httpClient.get<Students[]>(this.API_URL).subscribe(
+    /*this.httpClient.get<Students[]>(this.API_URL).subscribe(
       (data) => {
         this.isTblLoading = false;
         this.dataChange.next(data);
@@ -27,11 +38,19 @@ export class StudentsService {
         this.isTblLoading = false;
         console.log(error.name + ' ' + error.message);
       }
-    );
-  }
-  addStudents(students: Students): void {
-    this.dialogData = students;
+    );*/
 
+    this.studentsFirestoreService.getData().pipe(
+      map(value => value.map(value1 => new Students(value1))))
+      .subscribe(value => {
+        this.isTblLoading = false;
+        this.dataChange.next(value);
+      })
+  }
+
+  addStudents(student: Students): Promise<any> {
+    this.dialogData = student;
+    return this.studentsFirestoreService.addData(student);
     /*  this.httpClient.post(this.API_URL, students).subscribe(data => {
       this.dialogData = students;
       },
@@ -39,9 +58,10 @@ export class StudentsService {
      // error code here
     });*/
   }
-  updateStudents(students: Students): void {
-    this.dialogData = students;
 
+  updateStudents(student: Students): Promise<any> {
+    this.dialogData = student;
+    return this.studentsFirestoreService.updateData(student);
     /* this.httpClient.put(this.API_URL + students.id, students).subscribe(data => {
       this.dialogData = students;
     },
@@ -50,9 +70,9 @@ export class StudentsService {
     }
   );*/
   }
-  deleteStudents(id: number): void {
-    console.log(id);
 
+  deleteStudents(student: Students): Promise<any> {
+    return this.studentsFirestoreService.deleteData(student);
     /*  this.httpClient.delete(this.API_URL + id).subscribe(data => {
       console.log(id);
       },

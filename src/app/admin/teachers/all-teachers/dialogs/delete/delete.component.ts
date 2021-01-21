@@ -28,7 +28,6 @@ export class DeleteDialogComponent {
       this.spinner.hide();
     } catch (e) {
       this.spinner.hide();
-      debugger;
     }
   }
 }
