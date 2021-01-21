@@ -75,7 +75,7 @@ export class FormDialogComponent {
   onNoClick(): void {
     this.dialogRef.close();
   }
-  public async confirmAdd(): void {
+  public async confirmAdd() {
     // this.studentsService.addStudents(this.stdForm.getRawValue());
     this.spinner.show();
     if (this.action === 'edit') {

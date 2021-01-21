@@ -16,7 +16,15 @@
         <form class="register-form m-4" [formGroup]="departmentForm" (ngSubmit)="submit">
             <div class="row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
-                    <mat-form-field class="example-full-width mb-3" appearance="outline">
+                  <mat-form-field class="example-full-width mb-3" appearance="outline">
+                    <mat-label>Department</mat-label>
+                    <input matInput formControlName="dName" required>
+                    <mat-icon matSuffix>grid</mat-icon>
+                    <mat-error *ngIf="departmentForm.get('dName').hasError('required')">
+                      Department required
+                    </mat-error>
+                  </mat-form-field>
+                    <!--<mat-form-field class="example-full-width mb-3" appearance="outline">
                         <mat-label>Department</mat-label>
                         <mat-select formControlName="dName" required>
                             <mat-option [value]="'mechanical'">
@@ -44,7 +52,7 @@
                         <mat-error *ngIf="departmentForm.get('dName').hasError('required')">
                             Select Any Department
                         </mat-error>
-                    </mat-form-field>
+                    </mat-form-field>-->
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width mb-3" appearance="outline">
